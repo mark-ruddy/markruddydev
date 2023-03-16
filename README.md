@@ -1,2 +1,2 @@
-# markruddysec.github.io
+# Security Blog
 Cybersecurity blog
