@@ -1,10 +1,29 @@
-remote_theme: pages-themes/hacker@v0.2.0
+remote_theme: jeffreytse/jekyll-theme-yat
 plugins:
   - jekyll-remote-theme
 
-title: mark_ruddy_security_blog
-description: Some notes on things I run into in while exploring infosec.
+title: MarkR Security Blog
 
-show_downloads: false
-github:
-  is_project_page: false
+# You can choose a theme color
+# Default theme colors as below:
+# coolblack: #090a0b
+# spacegrey: #353535
+# snowwhite: #ffffff
+#
+# theme_color: snowwhite
+#
+# Custom color as below:
+theme_color: "#090a0b"
+
+# Night/Dark mode
+# Default mode is "auto", "auto" is for auto nightshift
+# (19:00 - 07:00), "manual" is for manual toggle, and
+# "on/off" is for default on/off.
+#
+# Whatever the user's choice is, it will supersede the
+# default setting of the site and be kept during the
+# visit (session). Only the dark mode setting is"manual",
+# it will be always kept on every visit (i.e. no matter
+# the browser is closed or not)
+#
+night_mode: "on"
