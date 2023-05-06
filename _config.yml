@@ -1,5 +1,7 @@
-# theme: jekyll-theme-yat
 repository: mark-ruddy/mark-ruddy-sec.github.io
+url: "https://mark-ruddy-sec.github.io"
+baseurl: "/"
+
 remote_theme: jeffreytse/jekyll-theme-yat
 
 title: MarkR Cybersecurity Blog
