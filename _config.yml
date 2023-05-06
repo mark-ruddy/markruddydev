@@ -1,29 +1,7 @@
-remote_theme: jeffreytse/jekyll-theme-yat
-plugins:
-  - jekyll-remote-theme
+theme: jekyll-theme-yat
 
-title: MarkR Security Blog
+title: MarkR Cybersecurity Blog
+description: Write an awesome description for your new site here.
 
-# You can choose a theme color
-# Default theme colors as below:
-# coolblack: #090a0b
-# spacegrey: #353535
-# snowwhite: #ffffff
-#
-# theme_color: snowwhite
-#
-# Custom color as below:
 theme_color: "#090a0b"
-
-# Night/Dark mode
-# Default mode is "auto", "auto" is for auto nightshift
-# (19:00 - 07:00), "manual" is for manual toggle, and
-# "on/off" is for default on/off.
-#
-# Whatever the user's choice is, it will supersede the
-# default setting of the site and be kept during the
-# visit (session). Only the dark mode setting is"manual",
-# it will be always kept on every visit (i.e. no matter
-# the browser is closed or not)
-#
 night_mode: "on"
