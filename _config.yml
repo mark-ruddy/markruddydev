@@ -1,4 +1,5 @@
-theme: jekyll-theme-yat
+# theme: jekyll-theme-yat
+remote_theme: jeffreytse/jekyll-theme-yat
 
 title: MarkR Cybersecurity Blog
 

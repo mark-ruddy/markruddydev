@@ -13,9 +13,3 @@ Here's some content for my post. I can use Markdown to format it, like this:
 
 - bullet point 1
 - bullet point 2
-
-And I can also include code snippets, like this:
-
-```python
-def hello_world():
-    print("Hello, world!")
