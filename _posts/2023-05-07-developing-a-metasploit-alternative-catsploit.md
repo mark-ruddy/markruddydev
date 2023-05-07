@@ -7,7 +7,6 @@ categories: markdown
 In an attempt to build a new open-source cybersecurity tool for my own usage and to build some experience, I developed [Catsploit](https://github.com/mark-ruddy/catsploit). Catsploit is an exploitation framework inspired by [Metasploit](https://github.com/rapid7/metasploit-framework). This post relates to the code itself, especially the modular requirements for an exploit framework, and discusses why Metasploit will probably remain king as the go-to open-source generalist exploit framework.
 
 ## Catsploit development
-
 ### Structure
 
 Source code: https://github.com/mark-ruddy/catsploit
@@ -315,7 +314,7 @@ catsploit (payload/ruby/reverse_tcp)> info
 catsploit (payload/ruby/reverse_tcp)> set LHOST 192.168.1.1
 ```
 
-### Interactive CLI
+#### Interactive CLI
 An interactive CLI is relatively simple to implement. The complexity comes from holding state(e.g. Which exploit has the user currently selected? What options have they set to what values?).
 
 The below code in the `main` function of the CLI app is enough to provide the interactive CLI loop:
@@ -349,11 +348,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 ```
 
-### Holding CLI state in memory
+#### Holding CLI state in memory
 
 The approach I've chosen for this is something close to OOP, which in Rust's case is a struct type with methods defined on it. The `Cli` struct is defined with all the state it needs, with all of them put inside `Option` so they can each be `None` or `Some(T)`:
 
-```
+```rust
 pub struct Cli {
     pub prompt: Option<String>,
     pub selected_module_kind: Option<Kind>,
@@ -377,7 +376,7 @@ pub struct Cli {
 
 Then the `Cli` struct is used in a lot of different methods that take it as `&mut self`. This is a mutable reference to the instance/object of the `Cli` struct. Each of the below called methods can update the state of the `Cli`, change a value like `exploit_info` to `None` or `Some(exploit::Info)` and so on:
 
-```
+```rust
 impl Cli {
   ...
     pub fn handle_input(&mut self, input: UserInput) -> Result<(), Box<dyn Error>> {
@@ -417,10 +416,10 @@ let updated_exploits = change_exploits(...).unwrap()
 
 For a system managing hundreds or thousands of pieces of state information, it may make sense to look instead for an out-of-code way of storing it such as SQLite etc. I believe its generally fine to just store state in-memory when its reasonable, and especially when it allows your application to forgo requiring a dependency such as a database.
 
-### Hooking into the library
+#### Hooking into the library
 The code for hooking into the `catsploit_lib` library is actually very simple:
 
-```
+```rust
 use catsploit_lib::module::{index, Kind};
 
 ...
@@ -441,7 +440,7 @@ In this application-side code the exploit index is from the library is called, a
 
 From this we can see how this library could be used in any Rust code - for example an `axum` webserver could be written were a user visits a webapp that allows them to view the exploits and run them.
 
-## On exploit frameworks popularity
+## Exploit frameworks are momentum based
 As seen by the description of the code for an exploit framework, it is clear that they rely on modules. Everyday new exploits are developed for new vulnerabilities, new payloads techniques are developed, new scanners, etc. Without an extensive open-source community and full-time employees behind it to write new modules on a regular basis the framework will rapidly become outdated.
 
 When it comes to fuzzing tools for example you have a lot of quality tools to choose from: `ffuf`, `wfuzz`, `fuzzapi`, `boofuzz`, `syzkaller` and you could go on and on. Many of these tools are not super actively developed either, as they often don't need to be, once they're written and tested they can work well for years. This is not the case for exploit frameworks.
