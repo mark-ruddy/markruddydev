@@ -9,7 +9,8 @@ In an attempt to build a new open-source cybersecurity tool for my own usage and
 ## Catsploit development
 ### Structure
 
-Source code: https://github.com/mark-ruddy/catsploit
+Source code: <https://github.com/mark-ruddy/catsploit>
+
 Catsploit is layed out in a common format of a separate library to application/interface:
 
 ```
