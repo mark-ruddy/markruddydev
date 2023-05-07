@@ -4,7 +4,7 @@ title: Developing a Metasploit Alternative - Catsploit
 categories: markdown
 ---
 
-In an attempt to build a new open-source cybersecurity tool for my own usage and to build some experience, I developed [Catsploit](https://github.com/mark-ruddy/catsploit). Catsploit is an exploitation framework inspired by [Metasploit](https://github.com/rapid7/metasploit-framework). This post relates to the code itself, especially the modular requirements for an exploit framework, and discusses why Metasploit will probably remain king as the go-to open-source generalist exploit framework.
+In an attempt to build a new open-source cybersecurity tool for my own usage and to build some experience, I developed [Catsploit](https://github.com/mark-ruddy/catsploit). Catsploit is an exploitation framework inspired by [Metasploit](https://github.com/rapid7/metasploit-framework). This post relates to the code itself, especially the modular requirements for an exploit framework, and discusses why Metasploit will probably remain king as the go-to open-source generalist exploit framework for a long time.
 
 ## Catsploit development
 ### Structure
