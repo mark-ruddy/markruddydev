@@ -11,7 +11,7 @@ In an attempt to build a new open-source cybersecurity tool for my own usage and
 
 Source code: <https://github.com/mark-ruddy/catsploit>
 
-Catsploit is layed out in a common format of a separate library to application/interface:
+Catsploit is laid out in a common format of a separate library to application/interface:
 
 ```
 [main][~/dev/default/catsploit]$ tree -L 2   
