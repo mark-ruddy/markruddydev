@@ -446,7 +446,7 @@ As seen by the description of the code for an exploit framework, it is clear tha
 
 When it comes to fuzzing tools for example you have a lot of quality tools to choose from: `ffuf`, `wfuzz`, `fuzzapi`, `boofuzz`, `syzkaller` and you could go on and on. Many of these tools are not super actively developed either, as they often don't need to be, once they're written and tested they can work well for years. This is not the case for exploit frameworks.
 
-For a generalists open-source exploit framework, realistically `metasploit-framework` is the only option. There are a few other closed-source ones such as `CORE IMPACT`, `Immunity CANVAS`, or browser exploitation frameworks such as `BEeF`. 
+For a generalists open-source exploit framework, realistically `metasploit-framework` is the only option. There are a few other closed-source ones such as `CORE IMPACT` and `Immunity CANVAS`. Also more specialised ones such as The Browser Exploitation Framework `BeEF`. 
 
 None of these cover the same breadth of Metasploit though, and I believe it would be nearly impossible to do so - the project has the most momentum in a field that relies on that.
 
