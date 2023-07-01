@@ -7,6 +7,7 @@
   text-decoration: none;
 }
 
+/* fix posts not changing to black during light mode */
 .post-title a:hover {
   text-decoration: underline;
 }

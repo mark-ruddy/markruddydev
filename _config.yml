@@ -4,7 +4,7 @@ baseurl: "/"
 
 remote_theme: jeffreytse/jekyll-theme-yat
 
-title: MarkR Cybersecurity Blog
+title: MarkR Software Blog
 
 theme_color: "#090a0b"
 night_mode: "on"

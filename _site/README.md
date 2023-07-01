@@ -1,4 +1,4 @@
-# MarkR Cybersecurity blog
+# MarkR Software blog
 
 To build and run locally on Fedora:
 
