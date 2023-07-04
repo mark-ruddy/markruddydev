@@ -1,4 +1,4 @@
-# MarkR Software blog
+# MarkR Security blog
 
 To build and run locally on Fedora:
 
