@@ -1,4 +1,4 @@
-# MarkR Software blog
+# Mark Ruddy Dev Blog
 
 To build and run locally on Fedora:
 
