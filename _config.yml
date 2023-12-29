@@ -1,10 +1,10 @@
-repository: mark-ruddy/mark-ruddy-sec.github.io
-url: "https://mark-ruddy-sec.github.io"
+repository: mark-ruddy/markruddydev.github.io
+url: "https://markruddydev.github.io"
 baseurl: "/"
 
 remote_theme: jeffreytse/jekyll-theme-yat
 
-title: MarkR Security Blog
+title: Mark Ruddy Dev Blog
 
 theme_color: "#090a0b"
 night_mode: "on"

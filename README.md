@@ -1,4 +1,4 @@
-# MarkR Security blog
+# Mark Ruddy Dev Blog
 
 To build and run locally on Fedora:
 
